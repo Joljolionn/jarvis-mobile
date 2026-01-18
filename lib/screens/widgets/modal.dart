@@ -3,20 +3,20 @@ import 'package:jarvis_mobile/screens/widgets/new_item_button.dart';
 
 class Modal extends StatefulWidget {
   final Function(String) onComplete;
-  final FocusNode focusNode;
-  const Modal({super.key, required this.onComplete, required this.focusNode});
+  const Modal({super.key, required this.onComplete});
 
   @override
   State<Modal> createState() => _ModalState();
 }
 
 class _ModalState extends State<Modal> {
+  final FocusNode focusNode = FocusNode();
   String _title = "";
   @override
   Widget build(BuildContext context) {
     return Center(
       child: GestureDetector(
-      onTap: widget.focusNode.unfocus,
+        onTap: focusNode.unfocus,
         child: Material(
           type: MaterialType.transparency,
           child: Container(
@@ -32,7 +32,9 @@ class _ModalState extends State<Modal> {
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Color(0xFF0EAD42),
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                   ),
                   child: Column(
                     children: [
@@ -71,7 +73,7 @@ class _ModalState extends State<Modal> {
                     ],
                   ),
                 ),
-        
+
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                   child: Column(
@@ -86,7 +88,7 @@ class _ModalState extends State<Modal> {
                         ],
                       ),
                       TextField(
-                        focusNode: widget.focusNode,
+                        focusNode: focusNode,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide(width: 1),
@@ -137,9 +139,7 @@ class _ModalState extends State<Modal> {
                             backgroundColor: Colors.white,
                             textColor: Colors.black,
                             title: "Cancelar",
-                            onTap: () => {
-                              Navigator.pop(context),
-                            },
+                            onTap: () => {Navigator.pop(context)},
                           ),
                         ],
                       ),

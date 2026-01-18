@@ -16,12 +16,14 @@ class ListScreen extends StatefulWidget {
 class _ListScreenState extends State<ListScreen> {
   FocusNode focusNode = FocusNode();
   String _selectedFilter = "all";
-  List<ItemDto>? items;
+  List<ItemDto>? allItems;
+  List<ItemDto>? filteredItems;
   DbHelper dbHelper = DbHelper();
   void receiveItems() async {
     final fetchedItems = await dbHelper.getAllItems();
     setState(() {
-      items = fetchedItems;
+      allItems = fetchedItems;
+      filteredItems = allItems;
     });
   }
 
@@ -30,7 +32,7 @@ class _ListScreenState extends State<ListScreen> {
     await dbHelper.insertItem(title);
     final updatedItems = await dbHelper.getAllItems();
     setState(() {
-      items = updatedItems;
+      allItems = updatedItems;
     });
   }
 
@@ -38,16 +40,16 @@ class _ListScreenState extends State<ListScreen> {
     final int rowsAffected = await dbHelper.deleteItem(id);
     if (rowsAffected == 1) {
       setState(() {
-        items = items!.where((item) => item.id != id).toList();
+        allItems = allItems!.where((item) => item.id != id).toList();
       });
     }
   }
 
   void subNumItem(int id) async {
-    final index = items!.indexWhere((item) => item.id == id);
+    final index = allItems!.indexWhere((item) => item.id == id);
     if (index == -1) return;
 
-    final item = items![index];
+    final item = allItems![index];
     if (item.num <= 1) return;
 
     int rowsAffected = await dbHelper.updateNumItem(id, item.num - 1);
@@ -60,9 +62,9 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   void addNumItem(int id) async {
-    final index = items!.indexWhere((item) => item.id == id);
+    final index = allItems!.indexWhere((item) => item.id == id);
     if (index == -1) return;
-    final item = items![index];
+    final item = allItems![index];
     int rowsAffected = await dbHelper.updateNumItem(id, item.num + 1);
     if (rowsAffected == 1) {
       setState(() {
@@ -72,8 +74,8 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   void toggleCompletedItem(int id) async {
-    final index = items!.indexWhere((item) => item.id == id);
-    final item = items![index];
+    final index = allItems!.indexWhere((item) => item.id == id);
+    final item = allItems![index];
     int rowsAffected = await dbHelper.toggleCompletedItem(
       item.id,
       !item.completed,
@@ -91,10 +93,24 @@ class _ListScreenState extends State<ListScreen> {
     });
   }
 
+  void searchFilter(String search) {
+    setState(() {
+      if (search.isEmpty) {
+        filteredItems = allItems; // Se estiver vazio, volta tudo
+      } else {
+        filteredItems = allItems
+            ?.where(
+              (item) => item.name.toLowerCase().contains(search.toLowerCase()),
+            )
+            .toList();
+      }
+    });
+  }
+
   @override
   void initState() {
-    receiveItems();
     super.initState();
+    receiveItems();
   }
 
   @override
@@ -123,6 +139,7 @@ class _ListScreenState extends State<ListScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: TextField(
+                    onChanged: searchFilter,
                     focusNode: focusNode,
                     decoration: InputDecoration(
                       hintText: "Buscar item...",
@@ -163,13 +180,12 @@ class _ListScreenState extends State<ListScreen> {
                           onComplete: (title) {
                             addItem(title);
                           },
-                          focusNode: focusNode,
                         );
                       },
                     ),
                   ),
                 ),
-                Row(children: [Text("ITENS (${items?.length ?? 0})")]),
+                Row(children: [Text("ITENS (${filteredItems?.length ?? 0})")]),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -177,7 +193,7 @@ class _ListScreenState extends State<ListScreen> {
                       child: Column(
                         spacing: 20,
                         children:
-                            items
+                            filteredItems
                                 ?.map(
                                   (item) => ListItem(
                                     item: item,
