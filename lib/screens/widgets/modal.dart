@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:jarvis_mobile/screens/widgets/new_item_button.dart';
 
-class Modal extends StatelessWidget {
+class Modal extends StatefulWidget {
+  final Function(String) onComplete;
+  const Modal({super.key, required this.onComplete});
+
+  @override
+  State<Modal> createState() => _ModalState();
+}
+
+class _ModalState extends State<Modal> {
+  String _title = "";
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -81,6 +90,11 @@ class Modal extends StatelessWidget {
                         ),
                         hintText: "Ex: Leite, Pão, Ovos...",
                       ),
+                      onChanged: (value) {
+                        setState(() {
+                          _title = value;
+                        });
+                      },
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,7 +125,7 @@ class Modal extends StatelessWidget {
                           textColor: Colors.black,
                           title: "Adicionar",
                           onTap: () => {
-                            print("Adicionoouuu"),
+                            widget.onComplete(_title),
                             Navigator.pop(context),
                           },
                         ),
@@ -120,7 +134,6 @@ class Modal extends StatelessWidget {
                           textColor: Colors.black,
                           title: "Cancelar",
                           onTap: () => {
-                            print("Cancelouuu"),
                             Navigator.pop(context),
                           },
                         ),
