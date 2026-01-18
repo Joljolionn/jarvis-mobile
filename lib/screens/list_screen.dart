@@ -14,6 +14,7 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
+  FocusNode focusNode = FocusNode();
   String _selectedFilter = "all";
   List<ItemDto>? items;
   DbHelper dbHelper = DbHelper();
@@ -103,91 +104,105 @@ class _ListScreenState extends State<ListScreen> {
       appBar: AppBar(
         animateColor: false,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text("Lista de Compras"),
+        title: Text(
+          "Lista de Compras",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         titleSpacing: 20,
         scrolledUnderElevation: 0,
         elevation: 10,
         surfaceTintColor: Colors.transparent,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Buscar item...",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
+      body: GestureDetector(
+        onTap: focusNode.unfocus,
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: TextField(
+                    focusNode: focusNode,
+                    decoration: InputDecoration(
+                      hintText: "Buscar item...",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 2,
+                          color: Color(0xFF0EAD42),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SlidingFilter(
-                selectedFilter: _selectedFilter,
-                onTap: (String filter) {
-                  changeFilter(filter);
-                },
-              ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 10,
+                SlidingFilter(
+                  selectedFilter: _selectedFilter,
+                  onTap: (String filter) {
+                    changeFilter(filter);
+                  },
                 ),
-                child: PressableButton(
-                  backgroundColor: Color(0xFF13ec5b),
-                  textColor: Colors.black,
-                  title: '+ Novo item',
 
-                  onTap: () => showDialog(
-                    context: context,
-
-                    builder: (BuildContext context) {
-                      return Modal(
-                        onComplete: (title) {
-                          addItem(title);
-                        },
-                      );
-                    },
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 20,
+                    horizontal: 10,
                   ),
-                ),
-              ),
-              Row(children: [Text("ITENS (${items?.length ?? 0})")]),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: Column(
-                    spacing: 20,
-                      children:
-                          items
-                              ?.map(
-                                (item) => ListItem(
-                                  item: item,
-                                  toggleCompletedItem: (int id) {
-                                    toggleCompletedItem(id);
-                                  },
-                                  addNumItem: (int id) {
-                                    addNumItem(id);
-                                  },
-                                  subNumItem: (int id) {
-                                    subNumItem(id);
-                                  },
-                                  deleteItem: (int id) {
-                                    deleteItem(id);
-                                  },
-                                ),
-                              )
-                              .toList() ??
-                          [],
+                  child: PressableButton(
+                    backgroundColor: Color(0xFF13ec5b),
+                    textColor: Colors.black,
+                    title: '+ Novo item',
+
+                    onTap: () => showDialog(
+                      context: context,
+
+                      builder: (BuildContext context) {
+                        return Modal(
+                          onComplete: (title) {
+                            addItem(title);
+                          },
+                          focusNode: focusNode,
+                        );
+                      },
                     ),
                   ),
                 ),
-              ),
-            ],
+                Row(children: [Text("ITENS (${items?.length ?? 0})")]),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Column(
+                        spacing: 20,
+                        children:
+                            items
+                                ?.map(
+                                  (item) => ListItem(
+                                    item: item,
+                                    toggleCompletedItem: (int id) {
+                                      toggleCompletedItem(id);
+                                    },
+                                    addNumItem: (int id) {
+                                      addNumItem(id);
+                                    },
+                                    subNumItem: (int id) {
+                                      subNumItem(id);
+                                    },
+                                    deleteItem: (int id) {
+                                      deleteItem(id);
+                                    },
+                                  ),
+                                )
+                                .toList() ??
+                            [],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
