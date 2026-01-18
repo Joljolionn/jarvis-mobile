@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jarvis_mobile/data/db_helper.dart';
 import 'package:jarvis_mobile/data/dtos/item_dto.dart';
+import 'package:jarvis_mobile/screens/widgets/list_item.dart';
 import 'package:jarvis_mobile/screens/widgets/modal.dart';
 import 'package:jarvis_mobile/screens/widgets/new_item_button.dart';
 import 'package:jarvis_mobile/screens/widgets/sliding_filter.dart';
@@ -17,20 +18,70 @@ class _ListScreenState extends State<ListScreen> {
   List<ItemDto>? items;
   DbHelper dbHelper = DbHelper();
   void receiveItems() async {
-    final fetchedItems = await dbHelper.items();
+    final fetchedItems = await dbHelper.getAllItems();
     setState(() {
       items = fetchedItems;
     });
   }
 
   void addItem(String title) async {
-    await dbHelper.insertItem(
-      ItemDto(id: null, name: title, num: 1, completed: false),
-    );
-    final updatedItems = await dbHelper.items();
+    if (title.isEmpty) return;
+    await dbHelper.insertItem(title);
+    final updatedItems = await dbHelper.getAllItems();
     setState(() {
       items = updatedItems;
     });
+  }
+
+  void deleteItem(int id) async {
+    final int rowsAffected = await dbHelper.deleteItem(id);
+    if (rowsAffected == 1) {
+      setState(() {
+        items = items!.where((item) => item.id != id).toList();
+      });
+    }
+  }
+
+  void subNumItem(int id) async {
+    final index = items!.indexWhere((item) => item.id == id);
+    if (index == -1) return;
+
+    final item = items![index];
+    if (item.num <= 1) return;
+
+    int rowsAffected = await dbHelper.updateNumItem(id, item.num - 1);
+
+    if (rowsAffected == 1) {
+      setState(() {
+        item.num -= 1;
+      });
+    }
+  }
+
+  void addNumItem(int id) async {
+    final index = items!.indexWhere((item) => item.id == id);
+    if (index == -1) return;
+    final item = items![index];
+    int rowsAffected = await dbHelper.updateNumItem(id, item.num + 1);
+    if (rowsAffected == 1) {
+      setState(() {
+        item.num += 1;
+      });
+    }
+  }
+
+  void toggleCompletedItem(int id) async {
+    final index = items!.indexWhere((item) => item.id == id);
+    final item = items![index];
+    int rowsAffected = await dbHelper.toggleCompletedItem(
+      item.id,
+      !item.completed,
+    );
+    if (rowsAffected == 1) {
+      setState(() {
+        item.completed = !item.completed;
+      });
+    }
   }
 
   void changeFilter(String filter) {
@@ -104,30 +155,35 @@ class _ListScreenState extends State<ListScreen> {
                   ),
                 ),
               ),
+              Row(children: [Text("ITENS (${items?.length ?? 0})")]),
               Expanded(
                 child: SingleChildScrollView(
-                  child: Column(
-                    children:
-                        items
-                            ?.map(
-                              (item) => Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    children: [
-                                      Text("id: ${item.id}"),
-                                      Text("name: ${item.name}"),
-                                      Text("num: ${item.num}"),
-                                      Text(
-                                        "Completed? ${item.completed ? 'true' : 'false'}",
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )
-                            .toList() ??
-                        [],
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Column(
+                    spacing: 20,
+                      children:
+                          items
+                              ?.map(
+                                (item) => ListItem(
+                                  item: item,
+                                  toggleCompletedItem: (int id) {
+                                    toggleCompletedItem(id);
+                                  },
+                                  addNumItem: (int id) {
+                                    addNumItem(id);
+                                  },
+                                  subNumItem: (int id) {
+                                    subNumItem(id);
+                                  },
+                                  deleteItem: (int id) {
+                                    deleteItem(id);
+                                  },
+                                ),
+                              )
+                              .toList() ??
+                          [],
+                    ),
                   ),
                 ),
               ),

@@ -1,8 +1,8 @@
 class ItemDto {
-  final int? id;
-  final String name;
-  final int num;
-  final bool completed;
+  int id;
+  String name;
+  int num;
+  bool completed;
 
   ItemDto({
     required this.id,

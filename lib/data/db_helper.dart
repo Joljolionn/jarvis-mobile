@@ -28,21 +28,48 @@ class DbHelper {
     );
   }
 
-  Future<void> insertItem(ItemDto item) async {
-    final db =
-        await database;
-    await db.insert(
-      'items',
-      item.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+  Future<void> insertItem(String name) async {
+    final db = await database;
+    await db.insert('items', {
+      "name": name,
+      "num": 1,
+      "completed": 0,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<List<ItemDto>> items() async {
+  Future<List<ItemDto>> getAllItems() async {
     final db = await database;
 
     final List<Map<String, Object?>> itemMaps = await db.query('items');
 
     return itemMaps.map((itemMap) => ItemDto.fromMap(itemMap)).toList();
+  }
+
+  Future<int> deleteItem(int id) async {
+    final db = await database;
+    int deleted = await db.delete("items", where: "id = ?", whereArgs: [id]);
+    return deleted;
+  }
+
+  Future<int> updateNumItem(int id, int num) async {
+    final db = await database;
+    int updated = await db.update(
+      "items",
+      {"num": num},
+      where: "id = ?",
+      whereArgs: [id],
+    );
+    return updated;
+  }
+
+  Future<int> toggleCompletedItem(int id, bool completed) async {
+    final db = await database;
+    int rowsAffected = await db.update(
+      "items",
+      {"completed": completed},
+      where: "id = ?",
+      whereArgs: [id],
+    );
+    return rowsAffected;
   }
 }
