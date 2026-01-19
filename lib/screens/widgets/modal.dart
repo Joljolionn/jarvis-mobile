@@ -14,139 +14,152 @@ class _ModalState extends State<Modal> {
   String _title = "";
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: focusNode.unfocus,
-        child: Material(
-          type: MaterialType.transparency,
-          child: Container(
-            width: 380,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              color: Theme.of(context).scaffoldBackgroundColor,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF0EAD42),
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [_CloseModalButton()],
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Novo item',
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Text(
-                                  'O que vamos comprar hoje?',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        behavior: HitTestBehavior.opaque,
+        child: Center(
+          child: GestureDetector(
+            onTap: focusNode.unfocus,
+            child: Material(
+              type: MaterialType.transparency,
+              child: Container(
+                width: 380,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  color: Theme.of(context).scaffoldBackgroundColor,
                 ),
-
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Nome do produto",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      TextField(
-                        focusNode: focusNode,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(width: 1),
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                          ),
-                          hintText: "Ex: Leite, Pão, Ovos...",
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Color(0xFF0EAD42),
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
                         ),
-                        onChanged: (value) {
-                          setState(() {
-                            _title = value;
-                          });
-                        },
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        spacing: 2,
+                      child: Column(
                         children: [
-                          Text("Pressione"),
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.black12,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              "X",
-                              style: TextStyle(
-                                backgroundColor: Colors.transparent,
-                              ),
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [_CloseModalButton()],
                           ),
-                          Text("ou fora do modal para sair rapidamente"),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Novo item',
+                                      style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      'O que vamos comprar hoje?',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                      Column(
+                    ),
+
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 30,
+                      ),
+                      child: Column(
                         spacing: 10,
                         children: [
-                          PressableButton(
-                            backgroundColor: Color(0xFF13ec5b),
-                            textColor: Colors.black,
-                            title: "Adicionar",
-                            onTap: () => {
-                              widget.onComplete(_title),
-                              Navigator.pop(context),
+                          Row(
+                            children: [
+                              Text(
+                                "Nome do produto",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          TextField(
+                            focusNode: focusNode,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(width: 1),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15),
+                                ),
+                              ),
+                              hintText: "Ex: Leite, Pão, Ovos...",
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _title = value;
+                              });
                             },
                           ),
-                          PressableButton(
-                            backgroundColor: Colors.white,
-                            textColor: Colors.black,
-                            title: "Cancelar",
-                            onTap: () => {Navigator.pop(context)},
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            spacing: 2,
+                            children: [
+                              Text("Pressione"),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                decoration: BoxDecoration(
+                                  color: Colors.black12,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  "X",
+                                  style: TextStyle(
+                                    backgroundColor: Colors.transparent,
+                                  ),
+                                ),
+                              ),
+                              Text("ou fora do modal para sair rapidamente"),
+                            ],
+                          ),
+                          Column(
+                            spacing: 10,
+                            children: [
+                              PressableButton(
+                                backgroundColor: Color(0xFF13ec5b),
+                                textColor: Colors.black,
+                                title: "Adicionar",
+                                onTap: () => {
+                                  FocusScope.of(context).unfocus(),
+                                  widget.onComplete(_title),
+                                  Navigator.pop(context),
+                                },
+                              ),
+                              PressableButton(
+                                backgroundColor: Colors.white,
+                                textColor: Colors.black,
+                                title: "Cancelar",
+                                onTap: () => {Navigator.pop(context)},
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

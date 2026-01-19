@@ -194,7 +194,6 @@ class _ListScreenState extends State<ListScreen> {
 
                     onTap: () => showDialog(
                       context: context,
-
                       builder: (BuildContext context) {
                         return Modal(
                           onComplete: (title) {
