@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jarvis_mobile/screens/list_screen.dart';
 
 void main(List<String> args) {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "Jarvis",
       theme: ThemeData.light(),
-      home: ListScreen(),
+      home: const ListScreen(),
     );
   }
 }

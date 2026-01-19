@@ -27,15 +27,15 @@ class _ModalState extends State<Modal> {
               child: Container(
                 width: 380,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: const BorderRadius.all(Radius.circular(20)),
                   color: Theme.of(context).scaffoldBackgroundColor,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
+                      padding: const EdgeInsets.all(20),
+                      decoration: const BoxDecoration(
                         color: Color(0xFF0EAD42),
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(20),
@@ -47,7 +47,7 @@ class _ModalState extends State<Modal> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [_CloseModalButton()],
                           ),
-                          Row(
+                          const Row(
                             children: [
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -80,14 +80,14 @@ class _ModalState extends State<Modal> {
                     ),
 
                     Container(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 20,
                         horizontal: 30,
                       ),
                       child: Column(
                         spacing: 10,
                         children: [
-                          Row(
+                          const Row(
                             children: [
                               Text(
                                 "Nome do produto",
@@ -97,7 +97,7 @@ class _ModalState extends State<Modal> {
                           ),
                           TextField(
                             focusNode: focusNode,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(width: 1),
                                 borderRadius: BorderRadius.all(
@@ -116,28 +116,28 @@ class _ModalState extends State<Modal> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             spacing: 2,
                             children: [
-                              Text("Pressione"),
+                              const Text("Pressione"),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
                                 decoration: BoxDecoration(
                                   color: Colors.black12,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   "X",
                                   style: TextStyle(
                                     backgroundColor: Colors.transparent,
                                   ),
                                 ),
                               ),
-                              Text("ou fora do modal para sair rapidamente"),
+                              const Text("ou fora do modal para sair rapidamente"),
                             ],
                           ),
                           Column(
                             spacing: 10,
                             children: [
                               PressableButton(
-                                backgroundColor: Color(0xFF13ec5b),
+                                backgroundColor: const Color(0xFF13ec5b),
                                 textColor: Colors.black,
                                 title: "Adicionar",
                                 onTap: () => {
@@ -182,7 +182,7 @@ class _CloseModalButton extends StatelessWidget {
         ),
         child: IconButton(
           onPressed: () => {Navigator.pop(context)},
-          icon: Icon(Icons.close, size: 20, color: Colors.white),
+          icon: const Icon(Icons.close, size: 20, color: Colors.white),
         ),
       ),
     );

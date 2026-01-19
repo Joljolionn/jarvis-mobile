@@ -18,13 +18,28 @@ class _ListScreenState extends State<ListScreen> {
   String _selectedFilter = "all";
   String _search = "";
   List<ItemDto>? allItems;
-  List<ItemDto>? filteredItems;
+  List<ItemDto>? get _displayItems {
+    return allItems!.where((item) {
+      final matchesName = item.name.toLowerCase().contains(
+        _search.toLowerCase(),
+      );
+
+      bool matchesStatus = true;
+      if (_selectedFilter == "pending") {
+        matchesStatus = item.completed == false;
+      } else if (_selectedFilter == "completed") {
+        matchesStatus = item.completed == true;
+      }
+
+      return matchesName && matchesStatus;
+    }).toList();
+  }
+
   DbHelper dbHelper = DbHelper();
   void receiveItems() async {
     final fetchedItems = await dbHelper.getAllItems();
     setState(() {
       allItems = fetchedItems;
-      filteredItems = allItems;
     });
   }
 
@@ -34,7 +49,6 @@ class _ListScreenState extends State<ListScreen> {
     final updatedItems = await dbHelper.getAllItems();
     setState(() {
       allItems = updatedItems;
-      filterSearch();
     });
   }
 
@@ -43,7 +57,6 @@ class _ListScreenState extends State<ListScreen> {
     if (rowsAffected == 1) {
       setState(() {
         allItems = allItems!.where((item) => item.id != id).toList();
-        filterSearch();
       });
     }
   }
@@ -93,35 +106,12 @@ class _ListScreenState extends State<ListScreen> {
   void changeFilter(String filter) {
     setState(() {
       _selectedFilter = filter;
-      filterSearch();
     });
   }
 
   void changeSearch(String search) {
     setState(() {
       _search = search;
-      filterSearch();
-    });
-  }
-
-  void filterSearch() {
-    setState(() {
-      if (allItems == null) return;
-
-      filteredItems = allItems!.where((item) {
-        final matchesName = item.name.toLowerCase().contains(
-          _search.toLowerCase(),
-        );
-
-        bool matchesStatus = true;
-        if (_selectedFilter == "pending") {
-          matchesStatus = item.completed == false;
-        } else if (_selectedFilter == "completed") {
-          matchesStatus = item.completed == true;
-        }
-
-        return matchesName && matchesStatus;
-      }).toList();
     });
   }
 
@@ -138,7 +128,7 @@ class _ListScreenState extends State<ListScreen> {
       appBar: AppBar(
         animateColor: false,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text(
+        title: const Text(
           "Lista de Compras",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -151,7 +141,7 @@ class _ListScreenState extends State<ListScreen> {
         onTap: focusNode.unfocus,
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+            padding: const EdgeInsetsGeometry.symmetric(horizontal: 20),
             child: Column(
               children: [
                 Padding(
@@ -161,7 +151,7 @@ class _ListScreenState extends State<ListScreen> {
                       changeSearch(search);
                     },
                     focusNode: focusNode,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: "Buscar item...",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -188,7 +178,7 @@ class _ListScreenState extends State<ListScreen> {
                     horizontal: 10,
                   ),
                   child: PressableButton(
-                    backgroundColor: Color(0xFF13ec5b),
+                    backgroundColor: const Color(0xFF13ec5b),
                     textColor: Colors.black,
                     title: '+ Novo item',
 
@@ -204,7 +194,7 @@ class _ListScreenState extends State<ListScreen> {
                     ),
                   ),
                 ),
-                Row(children: [Text("ITENS (${filteredItems?.length ?? 0})")]),
+                Row(children: [Text("ITENS (${_displayItems?.length ?? 0})")]),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -212,7 +202,7 @@ class _ListScreenState extends State<ListScreen> {
                       child: Column(
                         spacing: 20,
                         children:
-                            filteredItems
+                            _displayItems
                                 ?.map(
                                   (item) => ListItem(
                                     item: item,

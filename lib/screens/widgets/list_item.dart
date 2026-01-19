@@ -25,10 +25,10 @@ class _ListItemState extends State<ListItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.12),
@@ -52,9 +52,9 @@ class _ListItemState extends State<ListItem> {
                         onChanged: (bool? value) {
                           widget.toggleCompletedItem(widget.item.id);
                         },
-                        side: BorderSide(color: Colors.grey, width: 2),
-                        activeColor: Color(0xFF0EAD42),
-                        shape: RoundedRectangleBorder(
+                        side: const BorderSide(color: Colors.grey, width: 2),
+                        activeColor: const Color(0xFF0EAD42),
+                        shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(4)),
                           
                         ),
@@ -65,7 +65,7 @@ class _ListItemState extends State<ListItem> {
                         padding: const EdgeInsets.only(right: 10.0),
                         child: Text(
                           widget.item.name,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 16,
                           ),
@@ -84,7 +84,7 @@ class _ListItemState extends State<ListItem> {
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.black.withOpacity(0.06),
-                              borderRadius: BorderRadius.all(
+                              borderRadius: const BorderRadius.all(
                                 Radius.circular(8),
                               ),
 
@@ -92,10 +92,10 @@ class _ListItemState extends State<ListItem> {
                             child: Row(
                               children: [
                                 Container(
-                                  margin: EdgeInsets.all(4),
+                                  margin: const EdgeInsets.all(4),
                                   height: 40,
                                   width: 40,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(4),
@@ -105,24 +105,24 @@ class _ListItemState extends State<ListItem> {
                                     onPressed: () {
                                       widget.subNumItem(widget.item.id);
                                     },
-                                    icon: Icon(Icons.remove),
+                                    icon: const Icon(Icons.remove),
                                   ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Text(
                                     "${widget.item.num}",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.w800,
                                     ),
                                   ),
                                 ),
 
                                 Container(
-                                  margin: EdgeInsets.all(4),
+                                  margin: const EdgeInsets.all(4),
                                   height: 40,
                                   width: 40,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(4),
@@ -132,7 +132,7 @@ class _ListItemState extends State<ListItem> {
                                     onPressed: () {
                                       widget.addNumItem(widget.item.id);
                                     },
-                                    icon: Icon(Icons.add),
+                                    icon: const Icon(Icons.add),
                                   ),
                                 ),
                               ],
@@ -148,7 +148,7 @@ class _ListItemState extends State<ListItem> {
                           onPressed: () {
                             widget.deleteItem(widget.item.id);
                           },
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           color: Colors.redAccent,
                         ),
                       ),
