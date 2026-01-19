@@ -16,6 +16,7 @@ class ListScreen extends StatefulWidget {
 class _ListScreenState extends State<ListScreen> {
   FocusNode focusNode = FocusNode();
   String _selectedFilter = "all";
+  String _search = "";
   List<ItemDto>? allItems;
   List<ItemDto>? filteredItems;
   DbHelper dbHelper = DbHelper();
@@ -93,16 +94,29 @@ class _ListScreenState extends State<ListScreen> {
     });
   }
 
-  void searchFilter(String search) {
+  void changeSearch(String search) {
     setState(() {
-      if (search.isEmpty) {
-        filteredItems = allItems; // Se estiver vazio, volta tudo
+      _search = search;
+    });
+  }
+
+  void filterSearch() {
+    setState(() {
+      if (_search.isEmpty) {
+        filteredItems = allItems;
       } else {
-        filteredItems = allItems
-            ?.where(
-              (item) => item.name.toLowerCase().contains(search.toLowerCase()),
-            )
-            .toList();
+        filteredItems = allItems?.where((item) {
+          final nameSearch = item.name.toLowerCase().contains(
+            _search.toLowerCase(),
+          );
+          bool filterSearch = true;
+          if (_selectedFilter == "pending") {
+            filterSearch = item.completed == false;
+          } else if (_selectedFilter == "completed") {
+            filterSearch = item.completed == true;
+          }
+          return nameSearch && filterSearch;
+        }).toList();
       }
     });
   }
@@ -139,7 +153,10 @@ class _ListScreenState extends State<ListScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: TextField(
-                    onChanged: searchFilter,
+                    onChanged: (String search) {
+                      changeSearch(search);
+                      filterSearch();
+                    },
                     focusNode: focusNode,
                     decoration: InputDecoration(
                       hintText: "Buscar item...",
@@ -159,6 +176,7 @@ class _ListScreenState extends State<ListScreen> {
                   selectedFilter: _selectedFilter,
                   onTap: (String filter) {
                     changeFilter(filter);
+                    filterSearch();
                   },
                 ),
 
