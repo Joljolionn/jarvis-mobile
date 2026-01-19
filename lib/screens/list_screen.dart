@@ -34,6 +34,7 @@ class _ListScreenState extends State<ListScreen> {
     final updatedItems = await dbHelper.getAllItems();
     setState(() {
       allItems = updatedItems;
+      filterSearch();
     });
   }
 
@@ -42,6 +43,7 @@ class _ListScreenState extends State<ListScreen> {
     if (rowsAffected == 1) {
       setState(() {
         allItems = allItems!.where((item) => item.id != id).toList();
+        filterSearch();
       });
     }
   }
@@ -91,33 +93,35 @@ class _ListScreenState extends State<ListScreen> {
   void changeFilter(String filter) {
     setState(() {
       _selectedFilter = filter;
+      filterSearch();
     });
   }
 
   void changeSearch(String search) {
     setState(() {
       _search = search;
+      filterSearch();
     });
   }
 
   void filterSearch() {
     setState(() {
-      if (_search.isEmpty) {
-        filteredItems = allItems;
-      } else {
-        filteredItems = allItems?.where((item) {
-          final nameSearch = item.name.toLowerCase().contains(
-            _search.toLowerCase(),
-          );
-          bool filterSearch = true;
-          if (_selectedFilter == "pending") {
-            filterSearch = item.completed == false;
-          } else if (_selectedFilter == "completed") {
-            filterSearch = item.completed == true;
-          }
-          return nameSearch && filterSearch;
-        }).toList();
-      }
+      if (allItems == null) return;
+
+      filteredItems = allItems!.where((item) {
+        final matchesName = item.name.toLowerCase().contains(
+          _search.toLowerCase(),
+        );
+
+        bool matchesStatus = true;
+        if (_selectedFilter == "pending") {
+          matchesStatus = item.completed == false;
+        } else if (_selectedFilter == "completed") {
+          matchesStatus = item.completed == true;
+        }
+
+        return matchesName && matchesStatus;
+      }).toList();
     });
   }
 
@@ -155,7 +159,6 @@ class _ListScreenState extends State<ListScreen> {
                   child: TextField(
                     onChanged: (String search) {
                       changeSearch(search);
-                      filterSearch();
                     },
                     focusNode: focusNode,
                     decoration: InputDecoration(
@@ -176,7 +179,6 @@ class _ListScreenState extends State<ListScreen> {
                   selectedFilter: _selectedFilter,
                   onTap: (String filter) {
                     changeFilter(filter);
-                    filterSearch();
                   },
                 ),
 
