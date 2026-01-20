@@ -68,7 +68,11 @@ class _ListScreenState extends State<ListScreen> {
     final item = allItems![index];
     if (item.num <= 1) return;
 
-    int rowsAffected = await dbHelper.updateNumItem(id, item.num - 1);
+    int rowsAffected = await dbHelper.updateNumItem(
+      id,
+      item.num - 1,
+      isIncrement: false,
+    );
 
     if (rowsAffected == 1) {
       setState(() {
@@ -81,7 +85,11 @@ class _ListScreenState extends State<ListScreen> {
     final index = allItems!.indexWhere((item) => item.id == id);
     if (index == -1) return;
     final item = allItems![index];
-    int rowsAffected = await dbHelper.updateNumItem(id, item.num + 1);
+    int rowsAffected = await dbHelper.updateNumItem(
+      id,
+      item.num + 1,
+      isIncrement: true,
+    );
     if (rowsAffected == 1) {
       setState(() {
         item.num += 1;

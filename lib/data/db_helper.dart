@@ -19,6 +19,11 @@ class DbHelper {
     return _database!;
   }
 
+  Map<String, String> get _headers => {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
+
   Future<Database> _initDatabase() async {
     return openDatabase(
       join(await getDatabasesPath(), EnvConfig.dbRoute),
@@ -33,11 +38,20 @@ class DbHelper {
 
   Future<void> insertItem(String name) async {
     final db = await database;
-    await db.insert('items', {
+    final id = await db.insert('items', {
       "name": name,
       "num": 1,
       "completed": 0,
     }, conflictAlgorithm: ConflictAlgorithm.replace);
+    try {
+      await http.post(
+        Uri.parse("${EnvConfig.serverRoute}/add"),
+        headers: _headers,
+        body: jsonEncode({"title": name}),
+      );
+    } catch (e) {
+      print("Erro ao sincronizar insert: $e");
+    }
   }
 
   Future<List<ItemDto>> getAllItems() async {
@@ -48,31 +62,83 @@ class DbHelper {
     return itemMaps.map((itemMap) => ItemDto.fromMap(itemMap)).toList();
   }
 
-  Future<int> deleteItem(int id) async {
-    final db = await database;
-    int deleted = await db.delete("items", where: "id = ?", whereArgs: [id]);
-    return deleted;
-  }
+Future<int> deleteItem(int id) async {
+  final db = await database;
+  int deleted = await db.delete("items", where: "id = ?", whereArgs: [id]);
 
-  Future<int> updateNumItem(int id, int num) async {
+  try {
+    // Criamos a requisição manualmente para garantir que o body vá junto
+    final request = http.Request("DELETE", Uri.parse("${EnvConfig.serverRoute}/delete"));
+    
+    request.headers.addAll(_headers);
+    request.body = jsonEncode({"id": id});
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      print("Deletado no servidor com sucesso");
+    } else {
+      print("Erro no servidor: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("Erro de rede ao deletar: $e");
+  }
+  return deleted;
+}
+
+  Future<int> updateNumItem(
+    int id,
+    int num, {
+    required bool isIncrement,
+  }) async {
     final db = await database;
+
+    // 1. Atualização Local (continua igual)
     int updated = await db.update(
       "items",
       {"num": num},
       where: "id = ?",
       whereArgs: [id],
     );
+
+    // 2. Sincronização com as rotas /increase ou /decrease
+    try {
+      // Escolhe a rota baseada na ação
+      final action = isIncrement ? "increase" : "decrease";
+
+      await http.patch(
+        Uri.parse("${EnvConfig.serverRoute}/$action"),
+        headers: _headers,
+        // O seu Python espera um DTO que contém o ID
+        body: jsonEncode({"id": id}),
+      );
+    } catch (e) {
+      print("Erro ao sincronizar num no server: $e");
+    }
+
     return updated;
   }
 
   Future<int> toggleCompletedItem(int id, bool completed) async {
     final db = await database;
+    // 1. Local
     int rowsAffected = await db.update(
       "items",
-      {"completed": completed},
+      {"completed": completed ? 1 : 0},
       where: "id = ?",
       whereArgs: [id],
     );
+
+    // 2. Servidor
+    try {
+      await http.put(
+        Uri.parse("${EnvConfig.serverRoute}/completed"),
+        headers: _headers,
+        body: jsonEncode({"id": id, "completed": completed}),
+      );
+    } catch (e) {
+      print("Erro ao sincronizar toggle: $e");
+    }
     return rowsAffected;
   }
 
@@ -80,7 +146,7 @@ class DbHelper {
     try {
       final response = await http.get(
         Uri.parse("${EnvConfig.serverRoute}/all"),
-        headers: {'Accept': 'application/json'},
+        headers: _headers,
       );
 
       if (response.statusCode != 200) return false;
@@ -103,7 +169,7 @@ class DbHelper {
 
       return true;
     } catch (e) {
-     rethrow;
+      rethrow;
     }
   }
 }
