@@ -31,7 +31,7 @@ class _ListItemState extends State<ListItem> {
         borderRadius: const BorderRadius.all(Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color: Colors.black.withValues(alpha:0.12),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -83,7 +83,7 @@ class _ListItemState extends State<ListItem> {
                         children: [
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.06),
+                              color: Colors.black.withValues(alpha:0.06),
                               borderRadius: const BorderRadius.all(
                                 Radius.circular(8),
                               ),
