@@ -19,7 +19,14 @@ class ItemDto {
       completed: (map['completed'] as int) == 1,
     );
   }
-
+  factory ItemDto.fromServerMap(Map<String, dynamic> map) {
+    return ItemDto(
+      id: map["id"],
+      name: map["name"],
+      num: map["num"],
+      completed: map["completed"]
+    );
+  }
   Map<String, dynamic> toMap() {
     return {'id': id, 'name': name, 'num': num, 'completed': completed ? 1 : 0};
   }

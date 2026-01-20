@@ -19,7 +19,7 @@ class _ListScreenState extends State<ListScreen> {
   String _search = "";
   List<ItemDto>? allItems;
   List<ItemDto>? get _displayItems {
-    return allItems!.where((item) {
+    return allItems?.where((item) {
       final matchesName = item.name.toLowerCase().contains(
         _search.toLowerCase(),
       );
@@ -118,7 +118,17 @@ class _ListScreenState extends State<ListScreen> {
   @override
   void initState() {
     super.initState();
+    _initData();
+  }
+
+  void _initData() async {
     receiveItems();
+
+    bool success = await dbHelper.syncDatabase();
+
+    if (success) {
+      receiveItems();
+    }
   }
 
   @override

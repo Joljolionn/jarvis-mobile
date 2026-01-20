@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:jarvis_mobile/core/env_config.dart';
+import 'package:http/http.dart' as http;
 import 'package:jarvis_mobile/data/dtos/item_dto.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -71,5 +74,36 @@ class DbHelper {
       whereArgs: [id],
     );
     return rowsAffected;
+  }
+
+  Future<bool> syncDatabase() async {
+    try {
+      final response = await http.get(
+        Uri.parse("${EnvConfig.serverRoute}/all"),
+        headers: {'Accept': 'application/json'},
+      );
+
+      if (response.statusCode != 200) return false;
+
+      final List<dynamic> data = jsonDecode(response.body);
+
+      final db = await database;
+
+      await db.transaction((txn) async {
+        for (var itemJson in data) {
+          final item = ItemDto.fromServerMap(itemJson as Map<String, dynamic>);
+
+          await txn.insert(
+            "items",
+            item.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      });
+
+      return true;
+    } catch (e) {
+     rethrow;
+    }
   }
 }
